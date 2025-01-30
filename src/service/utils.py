@@ -1,12 +1,12 @@
 from uuid import uuid4, UUID
 from pydantic import BaseModel
 import socketio
-from src.schemas.schemas import Player
+from src.pydantic.types import PlayerType
 
 
 async def enter_room(
     sio: socketio.AsyncServer,
-    players: list[Player],
+    players: list[PlayerType],
 ) -> UUID:
     async def leave_all_rooms(sid):
         _, *rooms = sio.rooms(sid)
@@ -33,4 +33,8 @@ def info(*msg):
     for item in msg:
         print('=' * 20)
         pprint(item)
+    assert 0, msg
+
+
+def raise_assert(msg: str) -> None:
     assert 0, msg

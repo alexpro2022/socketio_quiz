@@ -1,7 +1,7 @@
 from uuid import uuid4
 import pytest
 # from pydantic import ValidationError
-from src.schemas.schemas import Topic, Question, JoinGame, Player, Answer, Game, GameOut
+from src.pydantic.schemas import Topic, Question, JoinGame, Player, Answer, Game, GameOut
 from src.repository.db.data import QUESTIONS
 from src.repository.db.crud import fetch_all
 from .conftest import single_loop_module  # noqa

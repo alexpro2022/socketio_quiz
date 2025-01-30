@@ -2,14 +2,16 @@ from typing import Callable
 import pytest
 import socketio
 import socketio.exceptions
-import main as app
-from src.schemas.schemas import JoinGame, Game, Player, NonNegativeInt
+from src.service.game import GameEnv
+from src.service.messages import Message
+from src.web.events import ClientEvent, ServerEvent
+from src.pydantic.schemas import JoinGame, Game, Player, NonNegativeInt
 from .conftest import AppTest
 from .types import (
     ClientType, ClientsType, DataType, EventType, PlayerType, ResponseType
 )
 
-waiting_rooms = app.GameEnv.waiting_rooms
+waiting_rooms = GameEnv.waiting_rooms
 
 
 def raise_assert(msg: str) -> None:
@@ -114,14 +116,14 @@ async def check_join_game_event(
 ) -> None:
     check_response(
         response=await emit_receive(
-            clients, app.ClientEvent.JOIN_GAME, game_data.model_dump()
+            clients, ClientEvent.JOIN_GAME, game_data.model_dump()
         ),
-        expected_event=app.ServerEvent.Game.JOINED,
-        expected_data=app.Message.ADDED_TO_WAITING_ROOM.format(
+        expected_event=ServerEvent.Game.JOINED,
+        expected_data=Message.ADDED_TO_WAITING_ROOM.format(
             sid=clients[0].sid
         ),
     )
-    assert app.GameEnv.waiting_rooms
+    assert GameEnv.waiting_rooms
 
 
 def get_current_game(
@@ -136,7 +138,7 @@ def get_current_game(
 
 def get_valid_data(
     index: int = 0,
-    current_games: dict = app.GameEnv.current_games,
+    current_games: dict = GameEnv.current_games,
 ) -> dict:
     return dict(
         index=index,

@@ -4,6 +4,9 @@ from typing import Callable
 import logging as logger
 from asyncio import iscoroutine
 
+from src.web.events import ServerEvent
+from src.web.app import server
+
 
 def validate(
     error_handler: Callable,
@@ -58,3 +61,11 @@ def validate(
                 f"{error_handler.__name__} types mismatch."
             )
     return decor
+
+
+async def error_handler(sid, exception: ValidationError):
+    msg = exception.json()  # exception.errors()
+    await server.emit(ServerEvent.Error.VALIDATION, msg, to=sid)
+
+validate_handler = validate(error_handler, validate_return=True)
+# validate_handler = partial(validate, error_handler, validate_return=True)

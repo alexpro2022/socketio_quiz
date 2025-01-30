@@ -1,4 +1,4 @@
-from src.schemas.schemas import Topic, Question
+from src.pydantic.schemas import Topic, Question
 # from schemas import Topic, Question
 
 dz = lambda x, y: dict(zip(x, y))
@@ -16,7 +16,7 @@ def question(text, amount=4):
 
 
 def topic_questions(start_pk, topic_pk, topic, amount=5):
-    return [(start_pk+i, topic_pk, *question(f'{topic} question-{i+1}')) for i in range(amount)]
+    return [(start_pk + i, topic_pk, *question(f'{topic} question-{i+1}')) for i in range(amount)]
 
 
 question_title = ('pk', 'topic', 'text', 'options', 'answer')

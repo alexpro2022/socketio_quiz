@@ -1,7 +1,7 @@
 from typing import Any, TypeAlias
 import socketio
 
-from src.schemas.schemas import Player
+from src.pydantic.schemas import Player
 
 ClientType: TypeAlias = socketio.AsyncSimpleClient  # AsyncClient
 ClientsType: TypeAlias = list[ClientType]

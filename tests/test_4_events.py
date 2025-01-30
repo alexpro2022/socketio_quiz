@@ -1,11 +1,14 @@
 from uuid import uuid4
 import pytest
 from socketio import exceptions
-from src.schemas.schemas import GameOut, QuestionOut, JoinGame, Player
-from main import (
-    TOPICS, to_dict, GameEnv,
-    ClientEvent, ServerEvent, Message, server,
-)
+
+from src.pydantic.schemas import GameOut, QuestionOut, JoinGame, Player
+from src.repository.db.data import TOPICS
+from src.service.utils import to_dict
+from src.service.game import GameEnv
+from src.web.events import ClientEvent, ServerEvent
+from src.service.messages import Message
+from src.web.sio import server
 from . import utils as u
 from .conftest import AppTest, pytestmark  # noqa
 from .types import ClientsType
