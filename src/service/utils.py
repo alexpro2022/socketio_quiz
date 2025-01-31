@@ -1,6 +1,9 @@
-from uuid import uuid4, UUID
-from pydantic import BaseModel
+from functools import wraps
+from uuid import UUID, uuid4
+
 import socketio
+
+from pydantic import BaseModel
 from src.pydantic.types import PlayerType
 
 
@@ -20,6 +23,15 @@ async def enter_room(
     return room
 
 
+def to_tuple(f):
+    @wraps(f)
+    async def wrapper(*args, **kwargs):
+        res = f(*args, **kwargs)
+        return res if isinstance(res, (tuple, list)) else [res]
+
+    return wrapper
+
+
 def to_dict(items: list[BaseModel]) -> list[dict]:
     return [item.model_dump() for item in items]
 
@@ -30,8 +42,9 @@ def to_json(items: list[BaseModel]) -> list[dict]:
 
 def info(*msg):
     from pprint import pprint
+
     for item in msg:
-        print('=' * 20)
+        print("=" * 20)
         pprint(item)
     assert 0, msg
 

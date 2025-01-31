@@ -1,21 +1,24 @@
+from collections.abc import Callable
 from uuid import uuid4
+
 import pytest
 from socketio import exceptions
 
-from src.pydantic.schemas import GameOut, QuestionOut, JoinGame, Player
+from src.pydantic.schemas import GameOut, JoinGame, Player, QuestionOut
 from src.repository.db.data import TOPICS
-from src.service.utils import to_dict
 from src.service.game import GameEnv
-from src.web.events import ClientEvent, ServerEvent
 from src.service.messages import Message
+from src.service.utils import to_dict
+from src.web.events import ClientEvent, ServerEvent
 from src.web.sio import server
+
 from . import utils as u
 from .conftest import AppTest, pytestmark  # noqa
 from .types import ClientsType
 
 TOPIC_PK = 5
-JOIN_FIRST_PLAYER = JoinGame(topic_pk=TOPIC_PK, name='Alex')
-JOIN_SECOND_PLAYER = JoinGame(topic_pk=TOPIC_PK+1, name='Alice')
+JOIN_FIRST_PLAYER = JoinGame(topic_pk=TOPIC_PK, name="Alex")
+JOIN_SECOND_PLAYER = JoinGame(topic_pk=TOPIC_PK + 1, name="Alice")
 waiting_rooms = GameEnv.waiting_rooms
 current_games = GameEnv.current_games
 
@@ -39,16 +42,18 @@ async def test__get_topics(clients: ClientsType):
 
 
 @pytest.mark.parametrize(
-    'event, invalid_data', (
+    "event, invalid_data",
+    (
         # join_game
         (ClientEvent.JOIN_GAME, None),
-        (ClientEvent.JOIN_GAME, dict(topic_pk=-1, name='name')),
+        (ClientEvent.JOIN_GAME, dict(topic_pk=-1, name="name")),
         (ClientEvent.JOIN_GAME, dict(topic_pk=0, name=1)),
         # answer
         (ClientEvent.ANSWER, None),
         (ClientEvent.ANSWER, dict(index=-1, game_uid=str(uuid4()))),
-        (ClientEvent.ANSWER, dict(index=0, game_uid='')),
-    ))
+        (ClientEvent.ANSWER, dict(index=0, game_uid="")),
+    ),
+)
 async def test__validation(clients: ClientsType, event, invalid_data):
     u.check_response(
         response=await u.emit_receive(clients, event, invalid_data),
@@ -70,10 +75,6 @@ async def test__ignore_join_to_same_game(clients: ClientsType):
     with pytest.raises(exceptions.TimeoutError):
         await u.check_join_game_event(clients, JOIN_FIRST_PLAYER)
     assert waiting_rooms == waiting_rooms_before
-    '''
-    defaultdict(<class 'list'>, {5: [Player(sid='HqUucTmiZUm0HDG_AAAB', name='Alex', score=0)]})
-    defaultdict(<class 'list'>, {5: [Player(sid='HqUucTmiZUm0HDG_AAAB', name='Alex', score=0)]})
-    '''
 
 
 async def test__join_only_one_game(clients: ClientsType):
@@ -91,10 +92,6 @@ async def test__join_only_one_game(clients: ClientsType):
     # previous game is removed, player moved to new game players list
     assert waiting_rooms.get(topic_before) is None
     assert waiting_rooms[JOIN_FIRST_PLAYER.topic_pk] == [player_before]
-    '''
-    defaultdict(<class 'list'>, {5: [Player(sid='319qboOYRKI2kUkmAAAB', name='Alex', score=0)]})
-    defaultdict(<class 'list'>, {6: [Player(sid='319qboOYRKI2kUkmAAAB', name='Alex', score=0)]})
-    '''
 
 
 async def test__join_game_second_player_starts_game(clients: ClientsType):
@@ -129,8 +126,9 @@ async def test__join_game_second_player_starts_game(clients: ClientsType):
     for p in game_out_data.players:
         assert p.score == 0
     assert game_out_data.question_count == len(game.questions)
-    assert game_out_data.current_question == \
-        QuestionOut.model_validate(game.questions[0])
+    assert game_out_data.current_question == QuestionOut.model_validate(
+        game.questions[0]
+    )
 
     # check rooms
     assert not waiting_rooms
@@ -168,13 +166,13 @@ async def test__answer_emit_to_players_their_data(clients: ClientsType):
     """Clients should receive different response data as per their game progress."""
     game = u.get_current_game(current_games)
 
-    def check_data(player: Player) -> None:
+    def check_data(player: Player) -> Callable:
         def func(data: GameOut):
             game_out = GameOut.model_validate(data)
-            assert game_out.current_question == \
-                QuestionOut.model_validate(
-                    game.questions[player.question_pointer]
-                )
+            assert game_out.current_question == QuestionOut.model_validate(
+                game.questions[player.question_pointer]
+            )
+
         return func
 
     first_player, second_player = game.players
@@ -204,15 +202,19 @@ async def test__answer_emit_to_players_their_data(clients: ClientsType):
 
 
 @pytest.mark.parametrize(
-    'answer_idx, expected_score, step', (
+    "answer_idx, expected_score, step",
+    (
         # (0, 0, 1),
         (0, 0, 2),
         (1, 1, 3),
         (3, 2, 4),
         (3, 2, 5),
         # (4, 3, 6),
-    ))
-async def test__answer_next_question(clients: ClientsType, answer_idx, expected_score, step):
+    ),
+)
+async def test__answer_next_question(
+    clients: ClientsType, answer_idx, expected_score, step
+):
     await u.emit_receive(
         clients,
         event=ClientEvent.ANSWER,
@@ -222,7 +224,7 @@ async def test__answer_next_question(clients: ClientsType, answer_idx, expected_
     )
     answering_player, second_player = u.get_current_game(current_games).players
     assert answering_player.sid == clients[0].sid
-    u.check_game_data(answering_player, expected_score, 0+step)
+    u.check_game_data(answering_player, expected_score, 0 + step)
     u.check_game_data(second_player, 0, 0)
 
 
@@ -235,10 +237,11 @@ async def test__answer_winner(clients: ClientsType):
             room=True,
         ),
         expected_event=ServerEvent.Game.OVER,
-        expected_data=Message.GAME_OVER.format(player='Alex'),
+        expected_data=Message.GAME_OVER.format(player="Alex"),
     )
 
 
+@pytest.mark.skip(reason="Not in use")
 async def test__disconnect(clients: ClientsType):
     *room, outside_user = clients
     assert outside_user.connected

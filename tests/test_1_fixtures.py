@@ -1,5 +1,5 @@
 from .conftest import AppTest
-from .types import ClientType, ClientsType
+from .types import ClientsType, ClientType
 
 
 def test__clients_fixture(clients: ClientsType):

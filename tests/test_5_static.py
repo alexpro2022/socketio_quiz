@@ -1,14 +1,16 @@
-from typing import Callable
+from collections.abc import Callable
+
 import aiohttp
+
 from .conftest import AppTest, pytestmark  # noqa
 
 URL = AppTest.base_url
 
 
 class Path:
-    LARISKA = 'static/lariska.js'
-    SCRIPT = 'static/script.js'
-    STILE = 'static/style.css'
+    LARISKA = "static/lariska.js"
+    SCRIPT = "static/script.js"
+    STILE = "static/style.css"
 
 
 class LoadFailMsg:
@@ -20,13 +22,13 @@ class LoadFailMsg:
 
 async def get_response(
     session: aiohttp.ClientSession,
-    path_param: str = '',
-    error_msg: str = '',
-    encoding: str = 'utf-8',
+    path_param: str = "",
+    error_msg: str = "",
+    encoding: str = "utf-8",
     check_response: Callable | None = None,
 ) -> str:
-    async with session.get(f'/{path_param}') as response:
-        assert response.status == 200, f'{response.status}: {error_msg}'
+    async with session.get(f"/{path_param}") as response:
+        assert response.status == 200, f"{response.status}: {error_msg}"
         if check_response is not None:
             return await check_response(response)
         return await response.text(encoding)
@@ -41,7 +43,10 @@ async def test__static():
         script_text = '<script src="/{}"></script>'
         assert script_text.format(Path.LARISKA) in page_content
         assert script_text.format(Path.SCRIPT) in page_content
-        assert f'<link rel="stylesheet" type="text/css" href="/{Path.STILE}"/>' in page_content
+        assert (
+            f'<link rel="stylesheet" type="text/css" href="/{Path.STILE}"/>'
+            in page_content
+        )
 
         # check that all static files are loaded
         assert await get_response(session, Path.LARISKA, LoadFailMsg.LARISKA)

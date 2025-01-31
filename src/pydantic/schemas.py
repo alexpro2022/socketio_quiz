@@ -1,14 +1,15 @@
+from typing import Annotated, Any
 from uuid import UUID
+
 from pydantic import BaseModel, Field
-from typing import Annotated
 
 NonNegativeInt = Annotated[int, Field(ge=0)]
-Str = Annotated[str, Field(min_length=1)]
+StrType = Annotated[str, Field(min_length=1)]
 
 
 class Topic(BaseModel):
     pk: NonNegativeInt
-    name: Str
+    name: StrType
 
 
 class Answer(BaseModel):
@@ -28,8 +29,8 @@ class BM(BaseModel):
 class QuestionOut(BM):
     pk: NonNegativeInt
     topic: NonNegativeInt
-    text: Str
-    options: list[Str]
+    text: StrType
+    options: list[StrType]
 
 
 class Question(QuestionOut):
@@ -38,8 +39,8 @@ class Question(QuestionOut):
 
 # Player ===========================================================
 class PlayerOut(BaseModel):
-    sid: Str
-    name: Str
+    sid: StrType
+    name: StrType
     score: NonNegativeInt = 0
 
 
@@ -50,7 +51,7 @@ class Player(PlayerOut):
 # GAME ==============================================================
 class JoinGame(BaseModel):
     topic_pk: NonNegativeInt
-    name: Str
+    name: StrType
 
 
 class GameBase(BaseModel):
@@ -64,7 +65,7 @@ class GameOut(GameBase):
 
     def model_dump(self):
         dump = super().model_dump()
-        dump['uid'] = str(self.uid)
+        dump["uid"] = str(self.uid)
         return dump
 
 
@@ -85,3 +86,10 @@ class Game(GameBase):
             current_question=self.questions[q_pointer],
             question_count=len(self.questions) - q_pointer,
         ).model_dump()
+
+
+class ServiceToWeb(BaseModel):
+    event: Any
+    data: Any | None = None
+    to: Any | None = None
+    room: Any | None = None

@@ -1,11 +1,11 @@
-from pydantic import validate_call, ValidationError
-from functools import wraps
-from typing import Callable
 import logging as logger
 from asyncio import iscoroutine
+from collections.abc import Callable
+from functools import wraps
 
-from src.web.events import ServerEvent
+from pydantic import ValidationError, validate_call
 from src.web.app import server
+from src.web.events import ServerEvent
 
 
 def validate(
@@ -15,8 +15,8 @@ def validate(
     clean_data: Callable | None = None,
 ) -> Callable[[Callable], Callable]:
     def decor(f):
-        SUCCESS_MSG = 'Success, result is: {}'
-        FAIL_MSG = 'Fail, errors are {}'
+        SUCCESS_MSG = "Success, result is: {}"
+        FAIL_MSG = "Fail, errors are {}"
         EXCEPTIONS = (ValidationError,)
 
         def _clean_data(data):
@@ -49,6 +49,7 @@ def validate(
                 res = await error_handler(sid, e)
                 _log(FAIL_MSG.format(res))
             return res
+
         return async_wrapper
         is_coro = map(iscoroutine, (f, error_handler))
         if all(is_coro):
@@ -60,12 +61,14 @@ def validate(
                 f"decorated function {f.__name__} and error_handler"
                 f"{error_handler.__name__} types mismatch."
             )
+
     return decor
 
 
 async def error_handler(sid, exception: ValidationError):
     msg = exception.json()  # exception.errors()
     await server.emit(ServerEvent.Error.VALIDATION, msg, to=sid)
+
 
 validate_handler = validate(error_handler, validate_return=True)
 # validate_handler = partial(validate, error_handler, validate_return=True)

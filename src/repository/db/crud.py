@@ -1,6 +1,8 @@
 """Async interface for future real DB connection."""
-from pydantic import BaseModel
+
 from typing import TypeAlias
+
+from pydantic import BaseModel
 
 ModelType: TypeAlias = BaseModel
 SeqType: TypeAlias = list[ModelType]
@@ -9,9 +11,10 @@ SeqType: TypeAlias = list[ModelType]
 async def _get(seq: SeqType, **kwargs):
     def pred(item):
         for k, v in kwargs.items():
-            if getattr(item, k, float('inf')) != v:
+            if getattr(item, k, float("inf")) != v:
                 return False
         return True
+
     return filter(pred, seq)
 
 

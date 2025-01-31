@@ -1,16 +1,18 @@
+import threading as th
+
 import pytest
 import pytest_asyncio
-import threading as th
 import uvicorn
 
 from src.web.app import app
-from .types import ClientType, ClientsType
+
+from .types import ClientsType, ClientType
 
 
 class AppTest:
-    base_url: str = 'http://127.0.0.1:8000'
+    base_url: str = "http://127.0.0.1:8000"
     clients_amount = 3
-    scope = 'module'
+    scope = "module"
     timeout = 0.1
 
     @staticmethod
@@ -18,7 +20,7 @@ class AppTest:
         th.Thread(target=lambda: uvicorn.run(app), daemon=True).start()
 
     @staticmethod
-    def single_loop(scope: str = 'module'):
+    def single_loop(scope: str = "module"):
         return pytest.mark.asyncio(loop_scope=scope)
 
 
