@@ -1,5 +1,8 @@
 name: Tests Ruff and pytest
 
+on:
+  workflow_call:
+
 jobs:
   tests:
     name: Tests Ruff and pytest
