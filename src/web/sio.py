@@ -1,13 +1,24 @@
 import logging as logger
 
+import socketio
+
 from src.pydantic.schemas import Answer, JoinGame
-from src.pydantic.validators import validate_handler
+from src.pydantic.validators import ValidationError, validate
 from src.repository.db.data import TOPICS
 from src.service.game import GameEnv
 from src.service.messages import Message
 from src.service.utils import to_dict
-from src.web.app import server
 from src.web.events import ClientEvent, ServerEvent
+
+server = socketio.AsyncServer(cors_allowed_origins="*", async_mode="asgi")
+
+
+async def error_handler(sid, exception: ValidationError):
+    msg = exception.json()
+    await server.emit(ServerEvent.Error.VALIDATION, msg, to=sid)
+
+
+validate_handler = validate(error_handler, validate_return=True)
 
 
 @server.event
@@ -27,7 +38,7 @@ async def get_topics(sid, *_):
 @server.on(ClientEvent.JOIN_GAME)
 @validate_handler
 async def join_game(sid, data: JoinGame) -> None:
-    out_data = await GameEnv.join_game(sid, data)
+    out_data = await GameEnv.join_game(server, sid, data)
     if out_data is not None:
         await server.emit(**out_data.model_dump())
     logger.info(out_data)

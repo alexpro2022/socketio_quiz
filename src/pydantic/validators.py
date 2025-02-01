@@ -4,8 +4,6 @@ from collections.abc import Callable
 from functools import wraps
 
 from pydantic import ValidationError, validate_call
-from src.web.app import server
-from src.web.events import ServerEvent
 
 
 def validate(
@@ -63,12 +61,3 @@ def validate(
             )
 
     return decor
-
-
-async def error_handler(sid, exception: ValidationError):
-    msg = exception.json()  # exception.errors()
-    await server.emit(ServerEvent.Error.VALIDATION, msg, to=sid)
-
-
-validate_handler = validate(error_handler, validate_return=True)
-# validate_handler = partial(validate, error_handler, validate_return=True)

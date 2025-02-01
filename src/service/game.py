@@ -2,11 +2,12 @@ from collections import defaultdict
 from uuid import UUID
 
 from src.pydantic.schemas import Answer, Game, JoinGame, Player, Question, ServiceToWeb
-from src.pydantic.types import GameType, PlayerType
+from src.pydantic.types import GameType, PlayerType, ServerType
 from src.repository.db import crud, data
 from src.service.messages import Message
 from src.service.utils import enter_room, to_tuple
-from src.web.app import server
+
+# from src.web.sio import server
 from src.web.events import ServerEvent
 
 
@@ -37,10 +38,12 @@ class GameEnv:
         cls.cleanup_wr()
 
     @classmethod
-    async def start_game(cls, waiting_room_name: int | str) -> GameType:
+    async def start_game(
+        cls, sio: ServerType, waiting_room_name: int | str
+    ) -> GameType:
         players: list[PlayerType] = cls.waiting_rooms.pop(waiting_room_name)
         game = Game(
-            uid=await enter_room(server, players),
+            uid=await enter_room(sio, players),
             questions=await crud.fetch_all(data.QUESTIONS, topic=waiting_room_name),
             players=players,
         )
@@ -48,14 +51,16 @@ class GameEnv:
         return game
 
     @classmethod
-    async def join_game(cls, sid, data: JoinGame) -> ServiceToWeb | None:
+    async def join_game(
+        cls, sio: ServerType, sid, data: JoinGame
+    ) -> ServiceToWeb | None:
         waiting_room_name = data.topic_pk
         player = Player(sid=sid, name=data.name)
         if player in cls.waiting_rooms[waiting_room_name]:
             return None
         cls.add_to_waiting_room(waiting_room_name, player)
         if cls.is_enough_players_in(waiting_room_name):
-            game = await cls.start_game(waiting_room_name)
+            game: GameType = await cls.start_game(sio, waiting_room_name)
             return ServiceToWeb(
                 event=ServerEvent.Game.GAME,
                 data=game.init(),

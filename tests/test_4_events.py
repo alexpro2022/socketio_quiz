@@ -9,8 +9,8 @@ from src.repository.db.data import TOPICS
 from src.service.game import GameEnv
 from src.service.messages import Message
 from src.service.utils import to_dict
+from src.web.app import server
 from src.web.events import ClientEvent, ServerEvent
-from src.web.sio import server
 
 from . import utils as u
 from .conftest import AppTest, pytestmark  # noqa
