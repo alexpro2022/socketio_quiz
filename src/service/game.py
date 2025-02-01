@@ -6,8 +6,6 @@ from src.pydantic.types import GameType, PlayerType, ServerType
 from src.repository.db import crud, data
 from src.service.messages import Message
 from src.service.utils import enter_room, to_tuple
-
-# from src.web.sio import server
 from src.web.events import ServerEvent
 
 

@@ -1,11 +1,6 @@
 """Async interface for future real DB connection."""
 
-from typing import TypeAlias
-
-from pydantic import BaseModel
-
-ModelType: TypeAlias = BaseModel
-SeqType: TypeAlias = list[ModelType]
+from src.pydantic.types import ModelType, SeqType
 
 
 async def _get(seq: SeqType, **kwargs):

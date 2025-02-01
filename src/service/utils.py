@@ -38,16 +38,3 @@ def to_dict(items: list[BaseModel]) -> list[dict]:
 
 def to_json(items: list[BaseModel]) -> list[dict]:
     return [item.model_dump_json() for item in items]
-
-
-def info(*msg):
-    from pprint import pprint
-
-    for item in msg:
-        print("=" * 20)
-        pprint(item)
-    assert 0, msg
-
-
-def raise_assert(msg: str) -> None:
-    assert 0, msg
