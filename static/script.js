@@ -19,13 +19,14 @@ document.addEventListener('DOMContentLoaded', function () {
       store: store,
       container: "#app",
       pages: app_pages,
-      url: 'http://127.0.0.1:8000' //window.location.hostname
+      url: window.location.hostname+":8000"
     });
     app.on("connect", null, ()=> {app.emit("get_topics")})
 
     // Когда загружены темы, переходим на страницу выбора темы
     app.on("topics", "#topics", (data)=>{
         app.store.topics=data
+        console.log(window.location.hostname)
     })
 
     // Когда игра пришла, обновляем ее

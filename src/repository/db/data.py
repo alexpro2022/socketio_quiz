@@ -14,7 +14,6 @@ TOPICS = [
         (7, "Сети и протоколы"),
     )
 ]
-# print(TOPICS)
 
 
 def question(text, amount=4):

@@ -1,0 +1,84 @@
+version: '3'
+services:
+
+  db:
+    image: postgres:15.1-alpine
+    restart: always
+    volumes:
+      - db_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+    expose:
+      - $DB_PORT
+
+  backend:
+    image: "${DOCKERHUB_USERNAME}/${PROJECT_NAME}_backend"
+    command: bash -c "chmod +x start.sh && ./start.sh"
+    restart: always
+    depends_on:
+      - db
+    env_file:
+      - ./.env
+    volumes:
+      - static:/app/static/
+      - media:/app/media/
+
+  # frontend:
+  #  image: "${DOCKERHUB_USERNAME}/${PROJECT_NAME}_frontend"
+
+  nginx:
+    image: linuxserver/swag:2.4.0
+    restart: unless-stopped
+    depends_on:
+      # - frontend
+      - backend
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - URL=${DOMAIN}
+      - VALIDATION=http
+    ports:
+      - 443:443
+      - 80:80
+    volumes:
+      - ./nginx.conf:/config/nginx/site-confs/default.conf
+      - static:/var/html/static/
+      - media:/var/html/media/
+
+  rabbitmq:
+    image: rabbitmq:latest
+    ports:
+      - $RABBITMQ_PORT:$RABBITMQ_PORT
+    env_file:
+      - ./.env
+
+  flower:
+    image: mher/flower
+    ports:
+      - 5555:5555
+    depends_on:
+      - rabbitmq
+    env_file:
+      - ./.env
+
+  celery_worker:
+    image: "${DOCKERHUB_USERNAME}/${PROJECT_NAME}_backend"
+    command: bash -c "celery -A funtech_proj.celery worker --loglevel=info"
+    volumes:
+      - media:/src/media/
+    links:
+      - rabbitmq
+    depends_on:
+      - rabbitmq
+      - backend
+    env_file:
+      - ./.env
+
+
+volumes:
+  db_data:
+  static:
+  media:
