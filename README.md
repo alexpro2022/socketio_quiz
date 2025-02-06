@@ -3,7 +3,7 @@
 
 [![Test Suite](https://github.com/alexpro2022/socketio_quiz/actions/workflows/branch_test.yml/badge.svg)](https://github.com/alexpro2022/socketio_quiz/actions/workflows/branch_test.yml)
 
-
+Викторина для 2 игроков
 
 <br>
 
@@ -23,8 +23,10 @@
 <details><summary>Подробнее</summary><br>
 
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue?logo=python)](https://www.python.org/)
+[![python-socketio](https://img.shields.io/badge/-python--socketio-464646?logo=socketio)](https://python-socketio.readthedocs.io/en/latest/index.html)
 [![Pydantic](https://img.shields.io/badge/pydantic-2.10-blue?logo=Pydantic)](https://docs.pydantic.dev/)
-[![Uvicorn](https://img.shields.io/badge/-Uvicorn-464646?logo=Uvicorn)](https://www.uvicorn.org/)
+[![aiohttp](https://img.shields.io/badge/-aiohttp-464646?logo=aiohttp)](https://docs.aiohttp.org/en/stable/index.html)
+[![Uvicorn](https://img.shields.io/badge/-Uvicorn-464646?logo=uvicorn)](https://www.uvicorn.org/)
 [![GitHub_Actions](https://img.shields.io/badge/-GitHub_Actions-464646?logo=GitHub)](https://docs.github.com/en/actions)
 [![Pytest](https://img.shields.io/badge/-Pytest-464646?logo=Pytest)](https://docs.pytest.org/en/latest/)
 [![pytest-asyncio](https://img.shields.io/badge/-Pytest--asyncio-464646?logo=Pytest-asyncio)](https://pypi.org/project/pytest-asyncio/)
@@ -39,7 +41,14 @@
 
 
 ## Описание работы:
-Add app description here
+
+1. Клиент запрашивает список тем.
+2. Сервер отправляет список тем.
+3. Клиент выбирает тему и вводит имя, сервер подключает его к залу ожидания в теме.
+4. Когда клиент подключился к залу ожидания где никого нет, он ждет.
+5. Когда два клиента подключились к залу ожидания, сервер объединяет их в комнату и начинает игру.
+6. Когда клиент отвечает на вопрос, сервер  отправляет обратную связь - меняет вопрос и обновляет количество оставшихся вопросов, а также обоим клиентам обновляет набранные очки.
+7. Когда вопросы закончились, сервер отправляет `over` и клиент показывает результаты игры
 
 [⬆️Оглавление](#оглавление)
 
