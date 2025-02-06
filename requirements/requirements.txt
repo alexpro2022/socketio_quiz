@@ -28,8 +28,6 @@ pre_commit==4.1.0
 propcache==0.2.1
 pydantic==2.10.5
 pydantic_core==2.27.2
-pytest==8.3.4
-pytest-asyncio==0.25.2
 python-engineio==4.11.2
 python-socketio==5.12.1
 PyYAML==6.0.2
