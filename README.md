@@ -6,7 +6,12 @@
 
 
     python -m venv venv && source venv/Scripts/activate
-    python -m pip install --upgrade pip && pip install -r requirements.txt
+    python -m pip install --upgrade pip && pip install -r requirements/dev.requirements.txt
 
 
     pre-commit run --all-files
+
+
+coverage run -m pytest
+
+pytest --cov=src
