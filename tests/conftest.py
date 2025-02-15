@@ -10,14 +10,19 @@ from .types import ClientsType, ClientType
 
 
 class AppTest:
-    base_url: str = "http://127.0.0.1:8000"
+    LOCALHOSTS = ("0.0.0.0", "127.0.0.1")
+    host: str = LOCALHOSTS[0]
+    port: int = 8000
+    base_url: str = f"http://{'localhost' if host in LOCALHOSTS else host}:{port}"
     clients_amount = 3
     scope = "module"
     timeout = 0.1
 
-    @staticmethod
-    def run_app(app):
-        th.Thread(target=lambda: uvicorn.run(app), daemon=True).start()
+    @classmethod
+    def run_app(cls, app):
+        th.Thread(
+            target=lambda: uvicorn.run(app, host=cls.host, port=cls.port), daemon=True
+        ).start()
 
     @staticmethod
     def single_loop(scope: str = "module"):

@@ -1,0 +1,5 @@
+*
+!requirements/requirements.txt
+!static
+!src
+**/__pycache__/
