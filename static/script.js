@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
       store: store,
       container: "#app",
       pages: app_pages,
-      url: 'http://127.0.0.1:8000' //window.location.hostname
+      url: window.location.hostname
     });
     app.on("connect", null, ()=> {app.emit("get_topics")})
 
@@ -30,17 +30,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Когда игра пришла, обновляем ее
     app.on("game", null, (data)=>{
-
-        if (app.store.game.question_count && app.store.game.question_count != data.question_count) {
-           // Если пришел фидбечик - показать сперва его, затем обновить вопрос
-           //app.run("feedback", data.feedback)
-           setTimeout( () => { app.store.game = data; app.go("playing")  }, 3000)
-        } else {
-           // если нет - сразу показать
-           console.log(data)
-           app.store.game = data; app.go("playing")
-        }
-
+        console.log(data)
+        app.store.game = data
+        app.go("playing")
     })
 
     app.addHandler("feedback", (data)=> {

@@ -24,7 +24,6 @@ nodeenv==1.9.1
 packaging==24.2
 platformdirs==4.3.6
 pluggy==1.5.0
-pre_commit==4.1.0
 propcache==0.2.1
 pydantic==2.10.5
 pydantic_core==2.27.2
@@ -35,6 +34,5 @@ simple-websocket==1.1.0
 tomli==2.2.1
 typing_extensions==4.12.2
 uvicorn==0.34.0
-virtualenv==20.29.1
 wsproto==1.2.0
 yarl==1.18.3
