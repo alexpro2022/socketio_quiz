@@ -13,3 +13,8 @@ on:
 jobs:
   tests:
     uses: ./.github/workflows/tests.yml
+
+  build_and_push_to_docker_hub:
+    needs: tests
+    uses: ./.github/workflows/build_push.yml
+    secrets: inherit
