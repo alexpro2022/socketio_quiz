@@ -78,8 +78,8 @@ cd socketio_quiz
 
 3. Установите в виртуальное окружение все необходимые зависимости из файла **requirements.txt**:
 ```bash
-python -m pip install --upgrade pip
-pip install -r requirements/dev.requirements.txt
+python -m pip install --upgrade pip && \
+pip install -r requirements/dev.requirements.txt --no-cache-dir
 ```
 
 [⬆️Оглавление](#оглавление)
@@ -104,7 +104,7 @@ pytest
 ```bash
 python main.py
 ```
-Проект будет развернут по адресу http://127.0.0.1:8000
+Проект будет развернут по адресу http://localhost
 
 [⬆️Оглавление](#оглавление)
 
@@ -139,3 +139,20 @@ coverage run -m pytest
 pytest --cov=src
 
 -->
+
+
+# Docker
+
+## Запуск приложения:
+```bash
+docker build -t=quiz -f=docker/Dockerfile .
+docker run --rm -d --name=quiz -p 80:80 quiz
+```
+Проект будет развернут по адресу http://localhost
+
+
+## Удаление приложения:
+```bash
+docker stop quiz
+docker rmi quiz
+```
