@@ -4,8 +4,8 @@ on:
   workflow_call:
 
 env:
-  image_name: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}
-  container_name: quiz
+  IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}
+  CONTAINER: quiz
 
 jobs:
   deploy:
@@ -18,7 +18,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            sudo docker rmi $image_name
-            sudo docker pull $image_name
-            sudo docker stop container_name
-            sudo docker run --rm -d --name=container_name -p 80:80 $image_name
+            sudo docker rmi $IMAGE
+            sudo docker pull $IMAGE
+            sudo docker stop $CONTAINER
+            sudo docker run --rm -d --name=$CONTAINER -p 80:80 $IMAGE
