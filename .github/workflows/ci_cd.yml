@@ -10,3 +10,8 @@ jobs:
   build_and_push_to_docker_hub:
     uses: ./.github/workflows/build_push.yml
     secrets: inherit
+
+  deploy:
+    needs: build_and_push_to_docker_hub
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
